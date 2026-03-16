@@ -1,0 +1,50 @@
+import java.util.*;
+
+class VideoCache {
+
+    LinkedHashMap<String, String> L1 =
+            new LinkedHashMap<>(10000, 0.75f, true);
+
+    HashMap<String, String> L2 = new HashMap<>();
+
+    HashMap<String, Integer> accessCount = new HashMap<>();
+
+    public String getVideo(String id) {
+
+        if (L1.containsKey(id)) {
+
+            return "L1 HIT: " + L1.get(id);
+        }
+
+        if (L2.containsKey(id)) {
+
+            promoteToL1(id);
+
+            return "L2 HIT";
+        }
+
+        String video = databaseFetch(id);
+
+        L2.put(id, video);
+
+        return "DB HIT";
+    }
+
+    private void promoteToL1(String id) {
+
+        L1.put(id, L2.get(id));
+    }
+
+    private String databaseFetch(String id) {
+
+        return "VideoData";
+    }
+
+    public static void main(String[] args) {
+
+        VideoCache cache = new VideoCache();
+
+        System.out.println(cache.getVideo("video_123"));
+        System.out.println(cache.getVideo("video_123"));
+    }
+}
