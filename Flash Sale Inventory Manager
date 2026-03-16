@@ -1,0 +1,41 @@
+import java.util.*;
+
+class FlashSaleInventory {
+
+    HashMap<String, Integer> stock = new HashMap<>();
+    HashMap<String, Queue<Integer>> waitingList = new HashMap<>();
+
+    public int checkStock(String productId) {
+        return stock.getOrDefault(productId, 0);
+    }
+
+    public synchronized String purchaseItem(String productId, int userId) {
+
+        int currentStock = stock.getOrDefault(productId, 0);
+
+        if (currentStock > 0) {
+
+            stock.put(productId, currentStock - 1);
+
+            return "Success, remaining " + (currentStock - 1);
+        }
+
+        waitingList.putIfAbsent(productId, new LinkedList<>());
+        waitingList.get(productId).add(userId);
+
+        return "Added to waiting list position " + waitingList.get(productId).size();
+    }
+
+    public static void main(String[] args) {
+
+        FlashSaleInventory system = new FlashSaleInventory();
+
+        system.stock.put("IPHONE15_256GB", 2);
+
+        System.out.println(system.checkStock("IPHONE15_256GB"));
+
+        System.out.println(system.purchaseItem("IPHONE15_256GB", 1001));
+        System.out.println(system.purchaseItem("IPHONE15_256GB", 1002));
+        System.out.println(system.purchaseItem("IPHONE15_256GB", 1003));
+    }
+}
