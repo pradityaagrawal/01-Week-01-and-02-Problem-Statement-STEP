@@ -1,0 +1,48 @@
+class ParkingLot {
+
+    String[] table;
+    int size = 500;
+
+    ParkingLot() {
+        table = new String[size];
+    }
+
+    int hash(String plate) {
+        return Math.abs(plate.hashCode()) % size;
+    }
+
+    int parkVehicle(String plate) {
+
+        int index = hash(plate);
+
+        while (table[index] != null) {
+            index = (index + 1) % size;
+        }
+
+        table[index] = plate;
+
+        return index;
+    }
+
+    void exitVehicle(String plate) {
+
+        int index = hash(plate);
+
+        while (!plate.equals(table[index])) {
+            index = (index + 1) % size;
+        }
+
+        table[index] = null;
+    }
+
+    public static void main(String[] args) {
+
+        ParkingLot lot = new ParkingLot();
+
+        int spot = lot.parkVehicle("ABC1234");
+
+        System.out.println("Parked at " + spot);
+
+        lot.exitVehicle("ABC1234");
+    }
+}
