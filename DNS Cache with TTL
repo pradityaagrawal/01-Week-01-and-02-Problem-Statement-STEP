@@ -1,0 +1,62 @@
+import java.util.*;
+
+class DNSEntry {
+
+    String ipAddress;
+    long expiryTime;
+
+    DNSEntry(String ip, long ttl) {
+
+        ipAddress = ip;
+        expiryTime = System.currentTimeMillis() + ttl;
+    }
+}
+
+class DNSCache {
+
+    HashMap<String, DNSEntry> cache = new HashMap<>();
+
+    int hits = 0;
+    int misses = 0;
+
+    public String resolve(String domain) {
+
+        DNSEntry entry = cache.get(domain);
+
+        if (entry != null && System.currentTimeMillis() < entry.expiryTime) {
+
+            hits++;
+            return entry.ipAddress;
+        }
+
+        misses++;
+
+        String ip = queryUpstreamDNS(domain);
+
+        cache.put(domain, new DNSEntry(ip, 300000));
+
+        return ip;
+    }
+
+    private String queryUpstreamDNS(String domain) {
+
+        return "172.217.14.206";
+    }
+
+    public void getStats() {
+
+        int total = hits + misses;
+
+        System.out.println("Hit Rate: " + (hits * 100.0 / total) + "%");
+    }
+
+    public static void main(String[] args) {
+
+        DNSCache dns = new DNSCache();
+
+        System.out.println(dns.resolve("google.com"));
+        System.out.println(dns.resolve("google.com"));
+
+        dns.getStats();
+    }
+}
