@@ -1,0 +1,51 @@
+import java.util.*;
+
+class Event {
+
+    String url;
+    String userId;
+    String source;
+
+    Event(String url, String userId, String source) {
+
+        this.url = url;
+        this.userId = userId;
+        this.source = source;
+    }
+}
+
+class AnalyticsDashboard {
+
+    HashMap<String, Integer> pageViews = new HashMap<>();
+    HashMap<String, Set<String>> uniqueVisitors = new HashMap<>();
+    HashMap<String, Integer> trafficSource = new HashMap<>();
+
+    public void processEvent(Event e) {
+
+        pageViews.put(e.url, pageViews.getOrDefault(e.url, 0) + 1);
+
+        uniqueVisitors.putIfAbsent(e.url, new HashSet<>());
+        uniqueVisitors.get(e.url).add(e.userId);
+
+        trafficSource.put(e.source, trafficSource.getOrDefault(e.source, 0) + 1);
+    }
+
+    public void getDashboard() {
+
+        System.out.println("Page Views:");
+        System.out.println(pageViews);
+
+        System.out.println("Traffic Sources:");
+        System.out.println(trafficSource);
+    }
+
+    public static void main(String[] args) {
+
+        AnalyticsDashboard system = new AnalyticsDashboard();
+
+        system.processEvent(new Event("/article", "user1", "google"));
+        system.processEvent(new Event("/article", "user2", "facebook"));
+
+        system.getDashboard();
+    }
+}
