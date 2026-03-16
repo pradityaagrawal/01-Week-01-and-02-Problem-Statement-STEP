@@ -1,0 +1,55 @@
+import java.util.*;
+
+class TokenBucket {
+
+    int tokens;
+    int maxTokens;
+    long lastRefillTime;
+
+    TokenBucket(int max) {
+
+        maxTokens = max;
+        tokens = max;
+        lastRefillTime = System.currentTimeMillis();
+    }
+}
+
+class RateLimiter {
+
+    HashMap<String, TokenBucket> clients = new HashMap<>();
+
+    public boolean checkRateLimit(String clientId) {
+
+        clients.putIfAbsent(clientId, new TokenBucket(1000));
+
+        TokenBucket bucket = clients.get(clientId);
+
+        refill(bucket);
+
+        if (bucket.tokens > 0) {
+
+            bucket.tokens--;
+            return true;
+        }
+
+        return false;
+    }
+
+    private void refill(TokenBucket bucket) {
+
+        long now = System.currentTimeMillis();
+
+        if (now - bucket.lastRefillTime > 3600000) {
+
+            bucket.tokens = bucket.maxTokens;
+            bucket.lastRefillTime = now;
+        }
+    }
+
+    public static void main(String[] args) {
+
+        RateLimiter limiter = new RateLimiter();
+
+        System.out.println(limiter.checkRateLimit("client1"));
+    }
+}
